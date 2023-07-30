@@ -4,25 +4,45 @@ import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 import jsonwebtoken from "jsonwebtoken";
 import { JWT } from "next-auth/jwt";
-import { encode } from "punycode";
+
+import { SessionInterface, UserProfile } from "@/common.types";
 
 export const authOptions: NextAuthOptions = {
     providers: [
         GoogleProvider({
-            clientId: "",
-            clientSecret: "",
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            checks: ["none"],
         }),
     ],
-    jwt: {
-        encode: ({ secret, token }) => {},
-        decode: async ({ secret, token }) => {},
-    },
+    // jwt: {
+    //     encode: ({ secret, token }) => {},
+    //     decode: async ({ secret, token }) => {},
+    // },
     theme: {
         colorScheme: "light",
-        logo: "/logo.png",
+        logo: "/logo.svg",
     },
     callbacks: {
-        async session({ session }) {},
-        async signIn({ user }) {},
+        async session({ session }) {
+            return session;
+        },
+        async signIn({ user }: { user: AdapterUser | User }) {
+            try {
+                console.log("User: ", user);
+                return true;
+            } catch (error: any) {
+                console.log("Error checking if user exists: ", error);
+                return false;
+            }
+        },
     },
+    secret: process.env.NEXTAUTH_SECRET!,
 };
+
+export async function getCurrentUser() {
+    const session = (await getServerSession(authOptions)) as SessionInterface;
+
+    console.log("Session: ", session);
+    return session;
+}
