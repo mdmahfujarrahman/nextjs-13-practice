@@ -7,7 +7,9 @@ const apiUrl = isProduction
     ? process.env.NEXT_PUBLIC_API_URL || ""
     : "http://127.0.0.1:4000/graphql";
 
-const apiKey = isProduction ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY : "dev";
+const apiKey = isProduction
+    ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY || ""
+    : "dev";
 const serverUrl = isProduction
     ? process.env.NEXT_PUBLIC_SERVER_URL
     : "http://localhost:3000";
@@ -21,6 +23,11 @@ const makeGrapQLRequest = async (query: string, variables = {}) => {
     }
 };
 
+export const getUser = (email: string) => {
+    client.setHeader("x-api-key", apiKey);
+    return makeGrapQLRequest(getUserQuery, { email });
+};
+
 export const createUser = (name: string, email: string, avatarUrl: string) => {
     const variables = {
         input: {
@@ -29,9 +36,6 @@ export const createUser = (name: string, email: string, avatarUrl: string) => {
             avatarUrl,
         },
     };
+    client.setHeader("x-api-key", apiKey);
     return makeGrapQLRequest(createUserMutation, variables);
-};
-
-export const getUser = (email: string) => {
-    return makeGrapQLRequest(getUserQuery, { email });
 };

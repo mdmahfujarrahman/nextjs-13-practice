@@ -15,7 +15,7 @@ const user = g
             .optional(),
     })
     .auth((rules) => rules.public().read());
-
+// @ts-ignore
 const project = g
     .model("Project", {
         title: g.string().length({ min: 3 }),

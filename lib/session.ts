@@ -16,10 +16,24 @@ export const authOptions: NextAuthOptions = {
             checks: ["none"],
         }),
     ],
-    // jwt: {
-    //     encode: ({ secret, token }) => {},
-    //     decode: async ({ secret, token }) => {},
-    // },
+    jwt: {
+        encode: ({ secret, token }) => {
+            const encodedToken = jsonwebtoken.sign(
+                {
+                    ...token,
+                    iss: "grafbase",
+                    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+                },
+                secret
+            );
+            return encodedToken;
+        },
+        decode: async ({ secret, token }) => {
+            console.log("Decoding token: ", token);
+            const decodedToken = jsonwebtoken.verify(token!, secret);
+            return decodedToken as JWT;
+        },
+    },
     theme: {
         colorScheme: "light",
         logo: "/logo.svg",
@@ -66,7 +80,5 @@ export const authOptions: NextAuthOptions = {
 
 export async function getCurrentUser() {
     const session = (await getServerSession(authOptions)) as SessionInterface;
-
-    console.log("Session: ", session);
     return session;
 }

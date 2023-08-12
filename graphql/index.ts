@@ -12,17 +12,17 @@ export const getUserQuery = `
   }
 `;
 export const createUserMutation = `
-  mutation CreateUser($input: userCreateInput!) {
-    userCreate(input: $input) {
-      user {
-        name
-        email
-        avatarUrl
-        description
-        githubUrl
-        linkedinUrl
-        id
-      }
-    }
-  }
+	mutation CreateUser($input: UserCreateInput!) {
+		userCreate(input: $input) {
+			user {
+				name
+				email
+				avatarUrl
+				description
+				githubUrl
+				linkedinUrl
+				id
+			}
+		}
+	}
 `;
