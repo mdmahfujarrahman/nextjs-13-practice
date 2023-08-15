@@ -13,6 +13,7 @@ export interface ProjectInterface {
     title: string;
     description: string;
     image: string;
+    imageUrl?: string;
     liveSiteUrl: string;
     githubUrl: string;
     category: string;
@@ -56,7 +57,7 @@ export interface SessionInterface extends Session {
 export interface ProjectForm {
     title: string;
     description: string;
-    image: string;
+    imageUrl: string;
     liveSiteUrl: string;
     githubUrl: string;
     category: string;
