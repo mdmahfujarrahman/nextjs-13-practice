@@ -2,10 +2,12 @@ import { ProjectForm } from "@/common.types";
 import {
     createProjectMutation,
     createUserMutation,
+    deleteProjectMutation,
     getProjectByIdQuery,
     getProjectsOfUserQuery,
     getUserQuery,
     projectsQuery,
+    updateProjectMutation,
 } from "@/graphql";
 import { GraphQLClient } from "graphql-request";
 
@@ -13,7 +15,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const apiUrl = isProduction
     ? process.env.NEXT_PUBLIC_API_URL || ""
-    : "http://127.0.0.1:5000/graphql";
+    : "http://127.0.0.1:4000/graphql";
 
 const apiKey = isProduction
     ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY || ""
@@ -94,11 +96,11 @@ export const createNewProject = async (
     }
 };
 
-export const fetchProjects = async (category?: string, endcursor?: string) => {
+export const fetchProjects = async (category?: string, endCursor?: string) => {
     client.setHeader("x-api-key", apiKey);
     return makeGrapQLRequest(projectsQuery, {
         category,
-        endcursor,
+        endCursor,
     });
 };
 
@@ -108,5 +110,37 @@ export const getProjectById = async (id: string) => {
 };
 export const getProjectByUserId = async (id: string, last?: number) => {
     client.setHeader("x-api-key", apiKey);
-    return makeGrapQLRequest(getProjectsOfUserQuery, { id , last});
+    return makeGrapQLRequest(getProjectsOfUserQuery, { id, last });
+};
+export const deleteProject = async (id: string, token: string) => {
+    client.setHeader("Authorization", `Bearer ${token}`);
+    return makeGrapQLRequest(deleteProjectMutation, { id, token });
+};
+export const editProject = async (
+    form: ProjectForm,
+    projectId: string,
+    token: string
+) => {
+    const isBase64DataUrl = (value: string) => {
+        const base64Regex = /^data:image\/[a-z]+;base64,/;
+        return base64Regex.test(value);
+    };
+
+    let updatedForm = { ...form };
+    const isUploadingNewImage = isBase64DataUrl(form.imageUrl);
+
+    if (isUploadingNewImage) {
+        const imageUrl = await uploadImage(form?.imageUrl);
+        if (imageUrl.url) {
+            updatedForm = { ...form, imageUrl: imageUrl.url };
+        }
+    }
+
+    const variables = {
+        id: projectId,
+        input: updatedForm,
+    };
+
+    client.setHeader("Authorization", `Bearer ${token}`);
+    return makeGrapQLRequest(updateProjectMutation, variables);
 };

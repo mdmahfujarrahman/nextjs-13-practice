@@ -39,10 +39,7 @@ const ProjectCard = ({
                 </div>
             </Link>
             <div className="flexBetween w-full px-2 mt-3 font font-semibold text-sm">
-                <Link
-                    href={`/profile
-                /${userId}`}
-                >
+                <Link href={`/profile/${userId}`}>
                     <div className="flexCenter gap-2 ">
                         <Image
                             src={avatarUrl}
@@ -54,7 +51,7 @@ const ProjectCard = ({
                         <p className="text-sm">{name}</p>
                     </div>
                 </Link>
-                <div className="flexCenter gap-0-3">
+                <div className="flexCenter gap-4">
                     <div className="flexCenter gap-2">
                         <Image
                             src="/hearth.svg"

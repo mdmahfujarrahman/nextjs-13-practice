@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { fetchToken } from "@/lib/actions";
+import { deleteProject, fetchToken } from "@/lib/actions";
 // import { deleteProject, fetchToken } from "@/lib/actions";
 
 type Props = {
@@ -22,7 +22,7 @@ const ProjectActions = ({ projectId }: Props) => {
         const { token } = await fetchToken();
 
         try {
-            // await deleteProject(projectId, token);
+            await deleteProject(projectId, token);
 
             router.push("/");
         } catch (error) {

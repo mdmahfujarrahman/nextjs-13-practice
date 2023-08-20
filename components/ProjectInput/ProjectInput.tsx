@@ -4,28 +4,29 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useState } from "react";
 
-import { SessionInterface } from "@/common.types";
+import { ProjectInterface, SessionInterface } from "@/common.types";
 import FormInput from "../FormInput/FormInput";
 import CustomMenu from "../CustomMenu/CustomMenu";
 import { categoryFilters } from "../constant";
 import Button from "../Button/Button";
-import { createNewProject, fetchToken } from "@/lib/actions";
+import { createNewProject, editProject, fetchToken } from "@/lib/actions";
 
 type Props = {
     type: string;
     session: SessionInterface;
+    project?: ProjectInterface;
 };
 
-const ProjectInput = ({ type, session }: Props) => {
+const ProjectInput = ({ type, session, project }: Props) => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [inputData, setInputData] = useState({
-        title: "",
-        imageUrl: "",
-        description: "",
-        liveSiteUrl: "",
-        githubUrl: "",
-        category: "",
+        title: project?.title ?? "",
+        imageUrl: project?.imageUrl ?? "",
+        description: project?.description ?? "",
+        liveSiteUrl: project?.liveSiteUrl ?? "",
+        githubUrl: project?.githubUrl ?? "",
+        category: project?.category ?? "",
     });
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,8 +40,10 @@ const ProjectInput = ({ type, session }: Props) => {
                 // create project
                 await createNewProject(inputData, session.user?.id, token);
                 router.push("/");
-            } else {
-                // edit project
+            }
+            if (type === "edit") {
+                await editProject(inputData, project?.id as string, token);
+                router.push("/");
             }
         } catch (error) {
             console.log(error);
